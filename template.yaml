@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: |
+  application-composer-demo
+  Sample SAM Template for application-composer-demo
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+Resources:
+  NIDemoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: demo/
+      Handler: app.lambdaHandler
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref NIDataTable
+          TABLE_ARN: !GetAtt NIDataTable.Arn
+          TABLE_NAME_2: !Ref NIDemoTable
+          TABLE_ARN_2: !GetAtt NIDemoTable.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NIDataTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NIDemoTable
+      Events:
+        NIServerlessRestApiPOSThello:
+          Type: Api
+          Properties:
+            Path: /demo
+            Method: POST
+  NIDemoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+Outputs:
+  HelloWorldApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+  HelloWorldFunction:
+    Description: Hello World Lambda Function ARN
+    Value: !GetAtt HelloWorldFunction.Arn
+  HelloWorldFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value: !GetAtt HelloWorldFunctionRole.Arn
