@@ -4,6 +4,8 @@ This project contains source code and supporting files for a serverless applicat
 
 That is a simple app that saves data sent in a DynamoDb table. The particularity is we have built the `template.yml` file from **AWS Application Composer**.
 
+The following article introduces it in a very friendly way: https://blog.numericaideas.com/aws-application-composer
+
 ## Stacks
 
 - JavaScript
